@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', function () {
   // Lista de cláusulas
   const clauses = [
     { id: 'clause-1', title: 'Respeito Mútuo', file: 'clause-1.html' },
+    { id: 'clause-2', title: 'Comunicação Transparente', file: 'clause-2.html' },
   ];
 
   loadClauses(clauses);
