@@ -199,23 +199,22 @@ function initializeSignaturePads() {
           clauses: []
         };
 
-        // Salva localmente
+        // Salva localmente (mantemos isso para compatibilidade)
         localStorage.setItem('saved_contract', JSON.stringify(contractData));
 
         try {
-          // Simula envio para um backend
+          // Salva no "backend" com ID fixo
           const contractId = await simulateBackendSave(contractData);
-          const shareLink = `${window.location.origin}${window.location.pathname}?contract=${contractId}`;
 
           // Mostra o botão de deletar após salvar
           if (deleteBtn) {
             deleteBtn.style.display = 'block';
           }
 
-          alert(`Contrato assinado com sucesso!\n\nLink para compartilhamento:\n${shareLink}`);
+          alert("Contrato assinado com sucesso!");
         } catch (error) {
           console.error("Erro ao salvar contrato:", error);
-          alert("Contrato salvo localmente, mas houve um erro ao compartilhar.");
+          alert("Erro ao salvar o contrato.");
         }
       });
     }
@@ -224,14 +223,11 @@ function initializeSignaturePads() {
   }
 }
 
-// Função simulada para salvar no backend
 async function simulateBackendSave(contractData) {
-  // Em uma implementação real, você faria uma chamada fetch() para seu backend
   return new Promise((resolve) => {
     setTimeout(() => {
-      // Gera um ID aleatório para simular
-      const contractId = 'contrato-' + Math.random().toString(36).substring(2, 9);
-      // Salva no localStorage para simular um backend
+      // Usamos um ID fixo para garantir que sempre haverá apenas um contrato
+      const contractId = 'current_contract';
       localStorage.setItem(`contract_${contractId}`, JSON.stringify(contractData));
       resolve(contractId);
     }, 1000);
@@ -240,34 +236,24 @@ async function simulateBackendSave(contractData) {
 
 // Verifica se há um contrato para carregar
 function checkForSavedContract() {
-  // Verifica se há um ID de contrato na URL
-  const urlParams = new URLSearchParams(window.location.search);
-  const contractId = urlParams.get('contract');
+  // Verifica primeiro se há um contrato com ID fixo
+  const fixedContractId = 'current_contract';
+  const savedContract = localStorage.getItem(`contract_${fixedContractId}`);
 
-  if (contractId) {
-    // Carrega o contrato do "backend" (localStorage simulando)
-    const savedContract = localStorage.getItem(`contract_${contractId}`);
-    if (savedContract) {
-      return JSON.parse(savedContract);
-    }
+  if (savedContract) {
+    return JSON.parse(savedContract);
   }
 
-  // Tenta carregar do localStorage local
+  // Se não encontrar, verifica o localStorage local como fallback
   const localContract = localStorage.getItem('saved_contract');
   return localContract ? JSON.parse(localContract) : null;
 }
 
 function deleteSavedContract() {
-  // Verifica se há um ID de contrato na URL
-  const urlParams = new URLSearchParams(window.location.search);
-  const contractId = urlParams.get('contract');
+  // Remove o contrato com ID fixo
+  localStorage.removeItem('contract_current_contract');
 
-  if (contractId) {
-    // Remove o contrato compartilhado
-    localStorage.removeItem(`contract_${contractId}`);
-  }
-
-  // Remove o contrato local
+  // Remove o contrato local antigo (para compatibilidade)
   localStorage.removeItem('saved_contract');
 
   // Remove as assinaturas individuais
@@ -275,5 +261,5 @@ function deleteSavedContract() {
   localStorage.removeItem('signature_partner2');
 
   // Recarrega a página para limpar tudo
-  window.location.href = window.location.pathname; // Remove parâmetros da URL
+  window.location.href = window.location.pathname;
 }
