@@ -38,36 +38,45 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 function loadSavedContract(contractData) {
-  // Esta função será chamada após as assinaturas serem inicializadas
   const canvas1 = document.getElementById('signature-pad-1');
   const canvas2 = document.getElementById('signature-pad-2');
-  const dateInput = document.querySelector('input[type="date"]');
+  const img1 = document.getElementById('signature-image-1');
+  const img2 = document.getElementById('signature-image-2');
+  const dateInput = document.getElementById('contract-date');
+  const timeElapsed = document.getElementById('time-elapsed');
 
   if (dateInput && contractData.date) {
     dateInput.value = contractData.date;
+
+    // Calcula o tempo decorrido
+    const signedDate = new Date(contractData.date);
+    const now = new Date();
+    const diffTime = Math.abs(now - signedDate);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    timeElapsed.textContent = `Assinado há ${diffDays} ${diffDays === 1 ? 'dia' : 'dias'}`;
+    dateInput.style.display = 'none';
+    timeElapsed.style.display = 'block';
   }
 
-  if (canvas1 && contractData.signatures?.partner1) {
-    const img1 = new Image();
-    img1.onload = function () {
-      const ctx1 = canvas1.getContext('2d');
-      ctx1.clearRect(0, 0, canvas1.width, canvas1.height);
-      ctx1.drawImage(img1, 0, 0, canvas1.width, canvas1.height);
-    };
+  if (img1 && contractData.signatures?.partner1) {
     img1.src = contractData.signatures.partner1;
+    img1.style.display = 'block';
+    canvas1.style.display = 'none';
   }
 
-  if (canvas2 && contractData.signatures?.partner2) {
-    const img2 = new Image();
-    img2.onload = function () {
-      const ctx2 = canvas2.getContext('2d');
-      ctx2.clearRect(0, 0, canvas2.width, canvas2.height);
-      ctx2.drawImage(img2, 0, 0, canvas2.width, canvas2.height);
-    };
+  if (img2 && contractData.signatures?.partner2) {
     img2.src = contractData.signatures.partner2;
+    img2.style.display = 'block';
+    canvas2.style.display = 'none';
   }
-}
 
+  // Mostra o botão de deletar e esconde o de salvar
+  const deleteBtn = document.getElementById('delete-contract');
+  const saveBtn = document.getElementById('save-contract');
+  if (deleteBtn) deleteBtn.style.display = 'block';
+  if (saveBtn) saveBtn.style.display = 'none';
+}
 function loadComponent(containerId, filePath) {
   fetch(filePath)
     .then(response => response.text())
@@ -189,7 +198,6 @@ function initializeSignaturePads() {
           return;
         }
 
-        // Cria objeto com os dados do contrato
         const contractData = {
           signatures: {
             partner1: signaturePad1.canvas.toDataURL(),
@@ -199,17 +207,37 @@ function initializeSignaturePads() {
           clauses: []
         };
 
-        // Salva localmente (mantemos isso para compatibilidade)
         localStorage.setItem('saved_contract', JSON.stringify(contractData));
 
         try {
-          // Salva no "backend" com ID fixo
-          const contractId = await simulateBackendSave(contractData);
+          await simulateBackendSave(contractData);
 
-          // Mostra o botão de deletar após salvar
-          if (deleteBtn) {
-            deleteBtn.style.display = 'block';
-          }
+          // Atualiza a UI para mostrar as assinaturas como imagens
+          const img1 = document.getElementById('signature-image-1');
+          const img2 = document.getElementById('signature-image-2');
+          const timeElapsed = document.getElementById('time-elapsed');
+
+          img1.src = contractData.signatures.partner1;
+          img1.style.display = 'block';
+          document.getElementById('signature-pad-1').style.display = 'none';
+
+          img2.src = contractData.signatures.partner2;
+          img2.style.display = 'block';
+          document.getElementById('signature-pad-2').style.display = 'none';
+
+          // Atualiza o tempo decorrido
+          const signedDate = new Date(contractData.date);
+          const now = new Date();
+          const diffTime = Math.abs(now - signedDate);
+          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+          timeElapsed.textContent = `Assinado há ${diffDays} ${diffDays === 1 ? 'dia' : 'dias'}`;
+          document.getElementById('contract-date').style.display = 'none';
+          timeElapsed.style.display = 'block';
+
+          // Atualiza os botões
+          if (deleteBtn) deleteBtn.style.display = 'block';
+          if (saveBtn) saveBtn.style.display = 'none';
 
           alert("Contrato assinado com sucesso!");
         } catch (error) {
@@ -218,6 +246,7 @@ function initializeSignaturePads() {
         }
       });
     }
+
   } catch (error) {
     console.error("Erro ao inicializar assinaturas:", error);
   }
@@ -262,4 +291,14 @@ function deleteSavedContract() {
 
   // Recarrega a página para limpar tudo
   window.location.href = window.location.pathname;
+
+  // Restaura a UI para o estado inicial
+  document.getElementById('signature-pad-1').style.display = 'block';
+  document.getElementById('signature-image-1').style.display = 'none';
+  document.getElementById('signature-pad-2').style.display = 'block';
+  document.getElementById('signature-image-2').style.display = 'none';
+  document.getElementById('contract-date').style.display = 'block';
+  document.getElementById('time-elapsed').style.display = 'none';
+  document.getElementById('save-contract').style.display = 'block';
+  document.getElementById('delete-contract').style.display = 'none';
 }
