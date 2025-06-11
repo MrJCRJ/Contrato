@@ -164,4 +164,12 @@ class SimpleSignaturePad {
       clientY - rect.top
     ];
   }
+
+  isEmpty() {
+    if (!this.canvas) return true;
+    const blank = document.createElement('canvas');
+    blank.width = this.canvas.width;
+    blank.height = this.canvas.height;
+    return this.canvas.toDataURL() === blank.toDataURL();
+  }
 }

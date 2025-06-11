@@ -3,10 +3,11 @@ document.addEventListener('DOMContentLoaded', function () {
   const savedContract = checkForSavedContract();
 
   // Mostra/oculta o botão de deletar
-  document.addEventListener('signaturesLoaded', () => {
+  document.addEventListener('DOMContentLoaded', function () {
+    // Oculta o botão de deletar inicialmente
     const deleteBtn = document.getElementById('delete-contract');
     if (deleteBtn) {
-      deleteBtn.style.display = savedContract ? 'block' : 'none';
+      deleteBtn.style.display = 'none';
     }
 
     if (savedContract) {
@@ -149,6 +150,7 @@ function initializeSignaturePads() {
   const clear1 = document.getElementById('clear-1');
   const clear2 = document.getElementById('clear-2');
   const saveBtn = document.getElementById('save-contract');
+  const deleteBtn = document.getElementById('delete-contract');
   const dateInput = document.querySelector('input[type="date"]');
 
   if (!canvas1 || !canvas2 || !clear1 || !clear2) {
@@ -160,16 +162,18 @@ function initializeSignaturePads() {
   if (dateInput) {
     const today = new Date().toISOString().split('T')[0];
     dateInput.value = today;
-    dateInput.max = today; // Não permite datas futuras
+    dateInput.max = today;
   }
 
-  const deleteBtn = document.getElementById('delete-contract');
+  // Configura o botão de deletar
   if (deleteBtn) {
     deleteBtn.addEventListener('click', () => {
       if (confirm('Tem certeza que deseja deletar este contrato? Esta ação não pode ser desfeita.')) {
         deleteSavedContract();
       }
     });
+    // Esconde inicialmente
+    deleteBtn.style.display = 'none';
   }
 
   // Inicializa as assinaturas
@@ -192,18 +196,21 @@ function initializeSignaturePads() {
             partner2: signaturePad2.canvas.toDataURL()
           },
           date: dateInput?.value || new Date().toISOString().split('T')[0],
-          clauses: [] // Você pode adicionar os dados das cláusulas aqui
+          clauses: []
         };
 
         // Salva localmente
         localStorage.setItem('saved_contract', JSON.stringify(contractData));
 
         try {
-          // Simula envio para um backend (substitua por uma chamada real)
+          // Simula envio para um backend
           const contractId = await simulateBackendSave(contractData);
-
-          // Gera link único para compartilhamento
           const shareLink = `${window.location.origin}${window.location.pathname}?contract=${contractId}`;
+
+          // Mostra o botão de deletar após salvar
+          if (deleteBtn) {
+            deleteBtn.style.display = 'block';
+          }
 
           alert(`Contrato assinado com sucesso!\n\nLink para compartilhamento:\n${shareLink}`);
         } catch (error) {
