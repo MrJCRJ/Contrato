@@ -1,5 +1,5 @@
 class SimpleSignaturePad {
-  constructor(canvasId, clearBtnId) {
+  constructor(canvasId, clearBtnId, storageKey) {
     this.canvas = document.getElementById(canvasId);
     if (!this.canvas) {
       console.error(`Canvas não encontrado: ${canvasId}`);
@@ -11,9 +11,11 @@ class SimpleSignaturePad {
     this.isDrawing = false;
     this.lastX = 0;
     this.lastY = 0;
+    this.storageKey = storageKey || `signature_${canvasId}`;
 
     this.setupCanvas();
     this.setupEventListeners();
+    this.loadSignature();
   }
 
   setupCanvas() {
@@ -71,6 +73,7 @@ class SimpleSignaturePad {
     this.ctx.stroke();
 
     [this.lastX, this.lastY] = [x, y];
+    this.saveSignature();
   }
 
   handleTouchStart(e) {
@@ -97,12 +100,33 @@ class SimpleSignaturePad {
 
   stopDrawing() {
     this.isDrawing = false;
+    this.saveSignature();
   }
 
   clear() {
     if (!this.canvas) return;
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    localStorage.removeItem(this.storageKey);
+  }
+
+  saveSignature() {
+    if (!this.canvas) return;
+    const signatureData = this.canvas.toDataURL();
+    localStorage.setItem(this.storageKey, signatureData);
+  }
+
+  loadSignature() {
+    if (!this.canvas) return;
+    const savedSignature = localStorage.getItem(this.storageKey);
+    if (savedSignature) {
+      const img = new Image();
+      img.onload = () => {
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.ctx.drawImage(img, 0, 0, this.canvas.width, this.canvas.height);
+      };
+      img.src = savedSignature;
+    }
   }
 
   getPosition(e) {
