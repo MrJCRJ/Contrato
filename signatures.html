@@ -1,15 +1,17 @@
-<section class="container mx-auto px-4 py-8">
-  <div class="bg-white rounded-lg shadow-lg p-6 max-w-4xl mx-auto">
+<section class="container mx-auto px-4 py-4 sm:py-8">
+  <div class="bg-white rounded-lg shadow-lg p-4 sm:p-6 max-w-4xl mx-auto">
     <h2
-      class="text-2xl font-bold text-neutralblue-800 mb-8 text-center border-b-2 border-neutralblue-500 pb-2"
+      class="text-xl sm:text-2xl font-bold text-neutralblue-800 mb-4 sm:mb-8 text-center border-b-2 border-neutralblue-500 pb-2"
     >
       Assinaturas
     </h2>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+    <div class="grid grid-cols-1 gap-6 sm:gap-8 mb-6 sm:mb-8">
       <!-- Parceiro 1 -->
-      <div class="space-y-4">
-        <h3 class="text-lg font-semibold text-neutralblue-700 text-center">
+      <div class="space-y-3 sm:space-y-4">
+        <h3
+          class="text-base sm:text-lg font-semibold text-neutralblue-700 text-center"
+        >
           Parceiro 1
         </h3>
         <div
@@ -17,7 +19,7 @@
         >
           <canvas
             id="signature-pad-1"
-            class="w-full h-40 touch-none"
+            class="w-full h-32 sm:h-40 touch-none"
             style="touch-action: none"
           ></canvas>
           <div class="absolute bottom-2 left-2 text-xs text-neutralblue-500">
@@ -27,11 +29,11 @@
         <button
           id="clear-1"
           type="button"
-          class="w-full py-2 bg-neutralblue-600 text-white rounded-lg hover:bg-neutralblue-700 transition flex items-center justify-center gap-2"
+          class="w-full py-1 sm:py-2 bg-neutralblue-600 text-white rounded-lg hover:bg-neutralblue-700 transition flex items-center justify-center gap-1 sm:gap-2 text-sm sm:text-base"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            class="h-5 w-5"
+            class="h-4 w-4 sm:h-5 sm:w-5"
             viewBox="0 0 20 20"
             fill="currentColor"
           >
@@ -46,8 +48,10 @@
       </div>
 
       <!-- Parceiro 2 -->
-      <div class="space-y-4">
-        <h3 class="text-lg font-semibold text-neutralblue-700 text-center">
+      <div class="space-y-3 sm:space-y-4">
+        <h3
+          class="text-base sm:text-lg font-semibold text-neutralblue-700 text-center"
+        >
           Parceiro 2
         </h3>
         <div
@@ -55,7 +59,7 @@
         >
           <canvas
             id="signature-pad-2"
-            class="w-full h-40 touch-none"
+            class="w-full h-32 sm:h-40 touch-none"
             style="touch-action: none"
           ></canvas>
           <div class="absolute bottom-2 left-2 text-xs text-neutralblue-500">
@@ -65,11 +69,11 @@
         <button
           id="clear-2"
           type="button"
-          class="w-full py-2 bg-neutralblue-600 text-white rounded-lg hover:bg-neutralblue-700 transition flex items-center justify-center gap-2"
+          class="w-full py-1 sm:py-2 bg-neutralblue-600 text-white rounded-lg hover:bg-neutralblue-700 transition flex items-center justify-center gap-1 sm:gap-2 text-sm sm:text-base"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            class="h-5 w-5"
+            class="h-4 w-4 sm:h-5 sm:w-5"
             viewBox="0 0 20 20"
             fill="currentColor"
           >
@@ -85,21 +89,23 @@
     </div>
 
     <div
-      class="flex flex-col sm:flex-row justify-between items-center mt-8 pt-6 border-t border-neutralblue-200"
+      class="flex flex-col sm:flex-row justify-between items-center mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-neutralblue-200"
     >
-      <div class="w-full sm:w-1/2 mb-4 sm:mb-0">
-        <label class="block text-sm font-medium text-neutralblue-700 mb-1">
+      <div class="w-full sm:w-1/2 mb-3 sm:mb-0">
+        <label
+          class="block text-xs sm:text-sm font-medium text-neutralblue-700 mb-1"
+        >
           Data
         </label>
         <input
           type="date"
-          class="w-full px-3 py-2 border border-neutralblue-300 rounded-lg focus:ring-neutralblue-500 focus:border-neutralblue-500"
+          class="w-full px-2 sm:px-3 py-1 sm:py-2 text-xs sm:text-sm border border-neutralblue-300 rounded-lg focus:ring-neutralblue-500 focus:border-neutralblue-500"
         />
       </div>
       <button
         type="button"
         id="save-contract"
-        class="w-full sm:w-auto px-6 py-3 bg-neutralblue-700 text-white rounded-lg hover:bg-neutralblue-800 transition font-medium"
+        class="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 bg-neutralblue-700 text-white rounded-lg hover:bg-neutralblue-800 transition font-medium text-sm sm:text-base"
       >
         Salvar Contrato
       </button>

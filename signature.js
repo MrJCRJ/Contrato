@@ -19,9 +19,13 @@ class SimpleSignaturePad {
   }
 
   setupCanvas() {
-    const ratio = window.devicePixelRatio || 1;
+    const ratio = Math.max(window.devicePixelRatio || 1, 1);
     const width = this.canvas.offsetWidth;
     const height = this.canvas.offsetHeight;
+
+    // Ajusta o tamanho para mobile
+    const isMobile = window.matchMedia("(max-width: 640px)").matches;
+    const lineWidth = isMobile ? 1.5 : 2;
 
     this.canvas.width = width * ratio;
     this.canvas.height = height * ratio;
@@ -29,7 +33,7 @@ class SimpleSignaturePad {
     this.canvas.style.height = `${height}px`;
 
     this.ctx.scale(ratio, ratio);
-    this.ctx.lineWidth = 2;
+    this.ctx.lineWidth = lineWidth; // Linha mais fina em mobile
     this.ctx.lineCap = 'round';
     this.ctx.strokeStyle = '#334e68';
     this.ctx.fillStyle = '#f0f4f8';
@@ -90,7 +94,25 @@ class SimpleSignaturePad {
   handleTouchMove(e) {
     if (!this.canvas) return;
     e.preventDefault();
+
+    // Aumenta a sensibilidade para dispositivos móveis
     const touch = e.touches[0];
+    const rect = this.canvas.getBoundingClientRect();
+
+    // Adiciona pontos intermediários para linhas mais suaves
+    if (this.lastTouch) {
+      const midX = (this.lastTouch.clientX + touch.clientX) / 2;
+      const midY = (this.lastTouch.clientY + touch.clientY) / 2;
+
+      const midEvent = new MouseEvent('mousemove', {
+        clientX: midX,
+        clientY: midY
+      });
+      this.canvas.dispatchEvent(midEvent);
+    }
+
+    this.lastTouch = touch;
+
     const mouseEvent = new MouseEvent('mousemove', {
       clientX: touch.clientX,
       clientY: touch.clientY
