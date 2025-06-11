@@ -20,6 +20,11 @@ function loadComponent(containerId, filePath) {
     .then(response => response.text())
     .then(data => {
       document.getElementById(containerId).innerHTML = data;
+
+      // Inicializa as assinaturas apenas quando o container de assinaturas é carregado
+      if (containerId === 'signatures-container') {
+        initializeSignaturePads();
+      }
     })
     .catch(error => console.error(`Erro ao carregar ${filePath}:`, error));
 }
@@ -82,4 +87,33 @@ function setupBackToTop() {
       behavior: 'smooth'
     });
   });
+}
+
+function initializeSignaturePads() {
+  // Verifica se os elementos existem
+  const canvas1 = document.getElementById('signature-pad-1');
+  const canvas2 = document.getElementById('signature-pad-2');
+  const clear1 = document.getElementById('clear-1');
+  const clear2 = document.getElementById('clear-2');
+  const saveBtn = document.getElementById('save-contract');
+
+  if (!canvas1 || !canvas2 || !clear1 || !clear2) {
+    console.error("Elementos de assinatura não encontrados!");
+    return;
+  }
+
+  // Inicializa as assinaturas
+  try {
+    new SimpleSignaturePad('signature-pad-1', 'clear-1');
+    new SimpleSignaturePad('signature-pad-2', 'clear-2');
+
+    // Configura o botão de salvar se existir
+    if (saveBtn) {
+      saveBtn.addEventListener('click', () => {
+        alert('Contrato assinado com sucesso!');
+      });
+    }
+  } catch (error) {
+    console.error("Erro ao inicializar assinaturas:", error);
+  }
 }

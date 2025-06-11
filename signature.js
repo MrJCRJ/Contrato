@@ -1,8 +1,11 @@
-// signature.js - Versão alternativa sem biblioteca externa
-
 class SimpleSignaturePad {
   constructor(canvasId, clearBtnId) {
     this.canvas = document.getElementById(canvasId);
+    if (!this.canvas) {
+      console.error(`Canvas não encontrado: ${canvasId}`);
+      return;
+    }
+
     this.ctx = this.canvas.getContext('2d');
     this.clearBtn = document.getElementById(clearBtnId);
     this.isDrawing = false;
@@ -32,6 +35,8 @@ class SimpleSignaturePad {
   }
 
   setupEventListeners() {
+    if (!this.canvas) return;
+
     // Mouse events
     this.canvas.addEventListener('mousedown', this.startDrawing.bind(this));
     this.canvas.addEventListener('mousemove', this.draw.bind(this));
@@ -44,7 +49,9 @@ class SimpleSignaturePad {
     this.canvas.addEventListener('touchend', this.stopDrawing.bind(this), { passive: false });
 
     // Clear button
-    this.clearBtn?.addEventListener('click', this.clear.bind(this));
+    if (this.clearBtn) {
+      this.clearBtn.addEventListener('click', this.clear.bind(this));
+    }
   }
 
   startDrawing(e) {
@@ -53,7 +60,7 @@ class SimpleSignaturePad {
   }
 
   draw(e) {
-    if (!this.isDrawing) return;
+    if (!this.isDrawing || !this.canvas) return;
 
     e.preventDefault();
     const [x, y] = this.getPosition(e);
@@ -67,6 +74,7 @@ class SimpleSignaturePad {
   }
 
   handleTouchStart(e) {
+    if (!this.canvas) return;
     e.preventDefault();
     const touch = e.touches[0];
     const mouseEvent = new MouseEvent('mousedown', {
@@ -77,6 +85,7 @@ class SimpleSignaturePad {
   }
 
   handleTouchMove(e) {
+    if (!this.canvas) return;
     e.preventDefault();
     const touch = e.touches[0];
     const mouseEvent = new MouseEvent('mousemove', {
@@ -91,21 +100,22 @@ class SimpleSignaturePad {
   }
 
   clear() {
+    if (!this.canvas) return;
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
   }
 
   getPosition(e) {
+    if (!this.canvas) return [0, 0];
     const rect = this.canvas.getBoundingClientRect();
+    const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+    const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+
+    if (clientX === undefined || clientY === undefined) return [0, 0];
+
     return [
-      e.clientX - rect.left,
-      e.clientY - rect.top
+      clientX - rect.left,
+      clientY - rect.top
     ];
   }
 }
-
-// Inicialização
-document.addEventListener('DOMContentLoaded', () => {
-  new SimpleSignaturePad('signature-pad-1', 'clear-1');
-  new SimpleSignaturePad('signature-pad-2', 'clear-2');
-});
