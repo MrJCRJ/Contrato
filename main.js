@@ -76,14 +76,44 @@ function startTimeCounter(signedDate, element) {
   setInterval(updateCounter, 1000);
 }
 
+function toggleAccordion(id) {
+  const header = document.querySelector(`#${id} .accordion-header`);
+  const content = document.getElementById(`${id}-content`);
+
+  header.classList.toggle('active');
+  content.classList.toggle('open');
+}
+
 function loadComponent(containerId, filePath) {
   fetch(filePath)
     .then(response => response.text())
     .then(data => {
-      document.getElementById(containerId).innerHTML = data;
       if (containerId === 'signatures-container') {
+        // Adiciona a estrutura de acordeão para as assinaturas
+        document.getElementById(containerId).innerHTML = `
+          <div class="accordion-header p-4 flex justify-between items-center bg-white rounded-t-lg shadow-neutral-md" data-target="signatures-content">
+            <h2 class="text-xl sm:text-2xl font-bold text-neutralblue-800">Assinaturas</h2>
+            <svg class="accordion-arrow w-5 h-5 text-neutralblue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+          <div id="signatures-content" class="accordion-content bg-white rounded-b-lg shadow-neutral-md">
+            ${data}
+          </div>
+        `;
+
+        // Adiciona o evento de clique ao cabeçalho das assinaturas
+        const header = document.querySelector('#signatures-container .accordion-header');
+        header.addEventListener('click', () => {
+          header.classList.toggle('active');
+          const content = document.getElementById('signatures-content');
+          content.classList.toggle('open');
+        });
+
         initializeSignaturePads();
         document.dispatchEvent(new Event('signaturesLoaded'));
+      } else {
+        document.getElementById(containerId).innerHTML = data;
       }
     })
     .catch(error => console.error(`Erro ao carregar ${filePath}:`, error));
@@ -98,6 +128,10 @@ function loadClauses(clauses) {
     navLink.href = `#${clause.id}`;
     navLink.textContent = clause.title;
     navLink.className = 'whitespace-nowrap px-4 py-2 bg-white rounded-full text-neutralblue-700 font-medium shadow-neutral-md hover:bg-neutralblue-100 transition-colors duration-200';
+    navLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      toggleAccordion(clause.id);
+    });
     navContainer.appendChild(navLink);
 
     if (index < clauses.length - 1) {
@@ -109,9 +143,29 @@ function loadClauses(clauses) {
       .then(data => {
         const clauseElement = document.createElement('div');
         clauseElement.id = clause.id;
-        clauseElement.className = 'clause-animate clause-card bg-white rounded-lg shadow-neutral-md overflow-hidden transition-all duration-300 p-4';
-        clauseElement.innerHTML = data;
+        clauseElement.className = 'clause-animate clause-card bg-white rounded-lg shadow-neutral-md overflow-hidden transition-all duration-300';
+
+        clauseElement.innerHTML = `
+          <div class="accordion-header p-4 flex justify-between items-center" data-target="${clause.id}-content">
+            <h3 class="text-lg font-semibold text-neutralblue-700">${clause.title}</h3>
+            <svg class="accordion-arrow w-5 h-5 text-neutralblue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+          <div id="${clause.id}-content" class="accordion-content px-4 pb-4">
+            ${data}
+          </div>
+        `;
+
         container.appendChild(clauseElement);
+
+        // Adiciona o evento de clique ao cabeçalho
+        const header = clauseElement.querySelector('.accordion-header');
+        header.addEventListener('click', () => {
+          header.classList.toggle('active');
+          const content = document.getElementById(`${clause.id}-content`);
+          content.classList.toggle('open');
+        });
       })
       .catch(error => console.error(`Erro ao carregar ${clause.file}:`, error));
   });

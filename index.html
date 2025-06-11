@@ -110,6 +110,31 @@
         box-shadow: 0 10px 25px -5px rgba(98, 125, 152, 0.2);
       }
     </style>
+    <style>
+      /* Adicione isso ao seu <style> existente */
+      .accordion-header {
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .accordion-content {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+      }
+
+      .accordion-content.open {
+        max-height: 2000px; /* Valor maior que o conteúdo máximo */
+      }
+
+      .accordion-arrow {
+        transition: transform 0.3s ease;
+      }
+
+      .accordion-header.active .accordion-arrow {
+        transform: rotate(180deg);
+      }
+    </style>
   </head>
   <body class="font-sans bg-neutralblue-50 text-gray-800">
     <div class="min-h-screen pb-16">
