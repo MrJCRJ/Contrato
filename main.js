@@ -1,4 +1,3 @@
-// main.js atualizado para trabalhar com os novos estilos
 document.addEventListener('DOMContentLoaded', function () {
   // Carrega os componentes estáticos
   loadComponent('header-container', 'header.html');
@@ -6,15 +5,13 @@ document.addEventListener('DOMContentLoaded', function () {
   loadComponent('signatures-container', 'signatures.html');
   loadComponent('footer-container', 'footer.html');
 
-  // Carrega as cláusulas dinamicamente
+  // Lista de cláusulas
   const clauses = [
     { id: 'clause-1', title: 'Respeito Mútuo', file: 'clause-1.html' },
-    // Adicione mais cláusulas aqui conforme necessário
+    // Adicione mais cláusulas conforme necessário
   ];
 
   loadClauses(clauses);
-
-  // Configura o botão de voltar ao topo
   setupBackToTop();
 });
 
@@ -24,7 +21,7 @@ function loadComponent(containerId, filePath) {
     .then(data => {
       document.getElementById(containerId).innerHTML = data;
     })
-    .catch(error => console.error('Error loading component:', error));
+    .catch(error => console.error(`Erro ao carregar ${filePath}:`, error));
 }
 
 function loadClauses(clauses) {
@@ -32,14 +29,21 @@ function loadClauses(clauses) {
   const navContainer = document.getElementById('clauses-nav').querySelector('div');
 
   clauses.forEach((clause, index) => {
-    // Adiciona link de navegação
+    // Navegação (menu superior)
     const navLink = document.createElement('a');
     navLink.href = `#${clause.id}`;
     navLink.textContent = clause.title;
-    navLink.className = 'whitespace-nowrap px-4 py-2 bg-white rounded-full text-romantic-700 font-medium shadow-romantic-md hover:bg-romantic-100 transition-colors';
+    navLink.className = `
+      whitespace-nowrap px-4 py-2
+      bg-white rounded-full
+      text-neutralblue-700 font-medium
+      shadow-neutral-md
+      hover:bg-neutralblue-100
+      transition-colors duration-200
+    `.trim();
     navContainer.appendChild(navLink);
 
-    // Adiciona espaço entre os links (exceto após o último)
+    // Espaço entre links (opcional)
     if (index < clauses.length - 1) {
       navContainer.appendChild(document.createTextNode(' '));
     }
@@ -50,26 +54,29 @@ function loadClauses(clauses) {
       .then(data => {
         const clauseElement = document.createElement('div');
         clauseElement.id = clause.id;
-        clauseElement.className = 'clause-animate clause-card bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300';
+        clauseElement.className = `
+          clause-animate clause-card
+          bg-white rounded-lg
+          shadow-neutral-md
+          overflow-hidden
+          transition-all duration-300
+          p-4
+        `.trim();
         clauseElement.innerHTML = data;
         container.appendChild(clauseElement);
       })
-      .catch(error => console.error('Error loading clause:', error));
+      .catch(error => console.error(`Erro ao carregar ${clause.file}:`, error));
   });
 }
 
 function setupBackToTop() {
-  const backToTopButton = document.getElementById('back-to-top');
+  const button = document.getElementById('back-to-top');
 
   window.addEventListener('scroll', () => {
-    if (window.pageYOffset > 300) {
-      backToTopButton.classList.add('visible');
-    } else {
-      backToTopButton.classList.remove('visible');
-    }
+    button.classList.toggle('visible', window.pageYOffset > 300);
   });
 
-  backToTopButton.addEventListener('click', () => {
+  button.addEventListener('click', () => {
     window.scrollTo({
       top: 0,
       behavior: 'smooth'
