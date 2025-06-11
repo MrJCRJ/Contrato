@@ -20,13 +20,11 @@
           <div id="signature-container-1" class="relative">
             <canvas
               id="signature-pad-1"
-              class="w-full h-32 sm:h-40 touch-none"
-              style="touch-action: none; display: none"
+              class="w-full h-32 sm:h-40 touch-none signature-canvas"
             ></canvas>
             <img
               id="signature-image-1"
-              class="w-full h-32 sm:h-40 object-contain"
-              style="display: none"
+              class="w-full h-32 sm:h-40 object-contain signature-image"
             />
             <div class="absolute bottom-2 left-2 text-xs text-neutralblue-500">
               Assine aqui
@@ -65,12 +63,19 @@
           class="relative border-2 border-neutralblue-300 rounded-lg bg-neutralblue-50 shadow-inner"
         >
           <div id="signature-container-2" class="relative">
-  <canvas id="signature-pad-2" class="w-full h-32 sm:h-40 touch-none" style="touch-action: none; display: none;"></canvas>
-  <img id="signature-image-2" class="w-full h-32 sm:h-40 object-contain" style="display: none;">
-  <div class="absolute bottom-2 left-2 text-xs text-neutralblue-500">
-    Assine aqui
-  </div>
-</div>
+            <canvas
+              id="signature-pad-2"
+              class="w-full h-32 sm:h-40 touch-none signature-canvas"
+            ></canvas>
+            <img
+              id="signature-image-2"
+              class="w-full h-32 sm:h-40 object-contain signature-image"
+            />
+            <div class="absolute bottom-2 left-2 text-xs text-neutralblue-500">
+              Assine aqui
+            </div>
+          </div>
+        </div>
         <button
           id="clear-2"
           type="button"
@@ -97,17 +102,21 @@
       class="flex flex-col sm:flex-row justify-between items-center mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-neutralblue-200"
     >
       <div class="w-full sm:w-1/2 mb-3 sm:mb-0">
-  <label class="block text-xs sm:text-sm font-medium text-neutralblue-700 mb-1">
-    Data
-  </label>
-  <input
-    type="date"
-    id="contract-date"
-    class="w-full px-2 sm:px-3 py-1 sm:py-2 text-xs sm:text-sm border border-neutralblue-300 rounded-lg focus:ring-neutralblue-500 focus:border-neutralblue-500"
-    style="display: none;"
-  >
-  <div id="time-elapsed" class="text-sm text-neutralblue-700"></div>
-</div>
+        <label
+          class="block text-xs sm:text-sm font-medium text-neutralblue-700 mb-1"
+        >
+          Data
+        </label>
+        <input
+          type="date"
+          id="contract-date"
+          class="w-full px-2 sm:px-3 py-1 sm:py-2 text-xs sm:text-sm border border-neutralblue-300 rounded-lg focus:ring-neutralblue-500 focus:border-neutralblue-500"
+        />
+        <div
+          id="time-elapsed"
+          class="text-sm text-neutralblue-700 hidden"
+        ></div>
+      </div>
       <button
         type="button"
         id="save-contract"
@@ -115,14 +124,35 @@
       >
         Salvar Contrato
       </button>
-
       <button
         type="button"
         id="delete-contract"
-        class="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-medium text-sm sm:text-base mt-2 sm:mt-0 sm:ml-2"
+        class="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-medium text-sm sm:text-base mt-2 sm:mt-0 sm:ml-2 hidden"
       >
         Deletar Contrato
       </button>
     </div>
   </div>
 </section>
+
+<style>
+  .signature-canvas {
+    display: block;
+  }
+  .signature-image {
+    display: none;
+  }
+  .has-signature .signature-canvas {
+    display: none;
+  }
+  .has-signature .signature-image {
+    display: block;
+  }
+  #time-elapsed {
+    padding: 0.5rem;
+    background-color: #f0f4f8;
+    border-radius: 0.5rem;
+    text-align: center;
+    font-weight: 500;
+  }
+</style>
