@@ -1,89 +1,111 @@
-// signature.js
+// signature.js - Versão alternativa sem biblioteca externa
 
-function initSignaturePad(canvasId, clearBtnId, storageKey) {
-  const canvas = document.getElementById(canvasId);
-  const clearBtn = document.getElementById(clearBtnId);
-  const ctx = canvas.getContext("2d");
+class SimpleSignaturePad {
+  constructor(canvasId, clearBtnId) {
+    this.canvas = document.getElementById(canvasId);
+    this.ctx = this.canvas.getContext('2d');
+    this.clearBtn = document.getElementById(clearBtnId);
+    this.isDrawing = false;
+    this.lastX = 0;
+    this.lastY = 0;
 
-  let drawing = false;
-  let lastX = 0;
-  let lastY = 0;
-
-  function getPos(e) {
-    const rect = canvas.getBoundingClientRect();
-    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-    return [clientX - rect.left, clientY - rect.top];
+    this.setupCanvas();
+    this.setupEventListeners();
   }
 
-  function startPosition(e) {
+  setupCanvas() {
+    const ratio = window.devicePixelRatio || 1;
+    const width = this.canvas.offsetWidth;
+    const height = this.canvas.offsetHeight;
+
+    this.canvas.width = width * ratio;
+    this.canvas.height = height * ratio;
+    this.canvas.style.width = `${width}px`;
+    this.canvas.style.height = `${height}px`;
+
+    this.ctx.scale(ratio, ratio);
+    this.ctx.lineWidth = 2;
+    this.ctx.lineCap = 'round';
+    this.ctx.strokeStyle = '#334e68';
+    this.ctx.fillStyle = '#f0f4f8';
+    this.ctx.fillRect(0, 0, width, height);
+  }
+
+  setupEventListeners() {
+    // Mouse events
+    this.canvas.addEventListener('mousedown', this.startDrawing.bind(this));
+    this.canvas.addEventListener('mousemove', this.draw.bind(this));
+    this.canvas.addEventListener('mouseup', this.stopDrawing.bind(this));
+    this.canvas.addEventListener('mouseout', this.stopDrawing.bind(this));
+
+    // Touch events
+    this.canvas.addEventListener('touchstart', this.handleTouchStart.bind(this), { passive: false });
+    this.canvas.addEventListener('touchmove', this.handleTouchMove.bind(this), { passive: false });
+    this.canvas.addEventListener('touchend', this.stopDrawing.bind(this), { passive: false });
+
+    // Clear button
+    this.clearBtn?.addEventListener('click', this.clear.bind(this));
+  }
+
+  startDrawing(e) {
+    this.isDrawing = true;
+    [this.lastX, this.lastY] = this.getPosition(e);
+  }
+
+  draw(e) {
+    if (!this.isDrawing) return;
+
     e.preventDefault();
-    drawing = true;
-    [lastX, lastY] = getPos(e);
+    const [x, y] = this.getPosition(e);
+
+    this.ctx.beginPath();
+    this.ctx.moveTo(this.lastX, this.lastY);
+    this.ctx.lineTo(x, y);
+    this.ctx.stroke();
+
+    [this.lastX, this.lastY] = [x, y];
   }
 
-  function finishedPosition(e) {
+  handleTouchStart(e) {
     e.preventDefault();
-    drawing = false;
-    ctx.beginPath();
-    saveSignature();
+    const touch = e.touches[0];
+    const mouseEvent = new MouseEvent('mousedown', {
+      clientX: touch.clientX,
+      clientY: touch.clientY
+    });
+    this.canvas.dispatchEvent(mouseEvent);
   }
 
-  function draw(e) {
-    if (!drawing) return;
+  handleTouchMove(e) {
     e.preventDefault();
-    const [x, y] = getPos(e);
-    ctx.lineWidth = 2;
-    ctx.lineCap = "round";
-    ctx.strokeStyle = "#334e68";
-
-    ctx.beginPath();
-    ctx.moveTo(lastX, lastY);
-    ctx.lineTo(x, y);
-    ctx.stroke();
-
-    lastX = x;
-    lastY = y;
+    const touch = e.touches[0];
+    const mouseEvent = new MouseEvent('mousemove', {
+      clientX: touch.clientX,
+      clientY: touch.clientY
+    });
+    this.canvas.dispatchEvent(mouseEvent);
   }
 
-  function saveSignature() {
-    const dataURL = canvas.toDataURL();
-    localStorage.setItem(storageKey, dataURL);
+  stopDrawing() {
+    this.isDrawing = false;
   }
 
-  function loadSignature() {
-    const dataURL = localStorage.getItem(storageKey);
-    if (dataURL) {
-      const image = new Image();
-      image.onload = () => {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
-      };
-      image.src = dataURL;
-    }
+  clear() {
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
   }
 
-  // Mouse
-  canvas.addEventListener("mousedown", startPosition);
-  canvas.addEventListener("mouseup", finishedPosition);
-  canvas.addEventListener("mouseout", finishedPosition);
-  canvas.addEventListener("mousemove", draw);
-
-  // Touch
-  canvas.addEventListener("touchstart", startPosition, { passive: false });
-  canvas.addEventListener("touchend", finishedPosition, { passive: false });
-  canvas.addEventListener("touchcancel", finishedPosition, { passive: false });
-  canvas.addEventListener("touchmove", draw, { passive: false });
-
-  clearBtn.addEventListener("click", () => {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    localStorage.removeItem(storageKey);
-  });
-
-  loadSignature();
+  getPosition(e) {
+    const rect = this.canvas.getBoundingClientRect();
+    return [
+      e.clientX - rect.left,
+      e.clientY - rect.top
+    ];
+  }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  initSignaturePad("signature-pad-1", "clear-1", "signature1");
-  initSignaturePad("signature-pad-2", "clear-2", "signature2");
+// Inicialização
+document.addEventListener('DOMContentLoaded', () => {
+  new SimpleSignaturePad('signature-pad-1', 'clear-1');
+  new SimpleSignaturePad('signature-pad-2', 'clear-2');
 });

@@ -1,51 +1,108 @@
 <section class="container mx-auto px-4 py-8">
-  <div class="bg-white rounded-lg shadow-md p-6">
+  <div class="bg-white rounded-lg shadow-lg p-6 max-w-4xl mx-auto">
     <h2
-      class="text-xl font-semibold bg-neutralblue-700 text-white mb-6 text-center"
+      class="text-2xl font-bold text-neutralblue-800 mb-8 text-center border-b-2 border-neutralblue-500 pb-2"
     >
       Assinaturas
     </h2>
 
-    <div class="flex flex-col sm:flex-row justify-between mb-8 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
       <!-- Parceiro 1 -->
-      <div class="w-full sm:w-5/12 text-center">
-        <canvas
-          id="signature-pad-1"
-          class="border bg-neutralblue-300 rounded-lg touch-none"
-          width="300"
-          height="150"
-          style="touch-action: none"
-        ></canvas>
+      <div class="space-y-4">
+        <h3 class="text-lg font-semibold text-neutralblue-700 text-center">
+          Parceiro 1
+        </h3>
+        <div
+          class="relative border-2 border-neutralblue-300 rounded-lg bg-neutralblue-50 shadow-inner"
+        >
+          <canvas
+            id="signature-pad-1"
+            class="w-full h-40 touch-none"
+            style="touch-action: none"
+          ></canvas>
+          <div class="absolute bottom-2 left-2 text-xs text-neutralblue-500">
+            Assine aqui
+          </div>
+        </div>
         <button
           id="clear-1"
-          class="mt-2 px-4 py-1 bg-neutralblue-700 text-white rounded hover:bg-neutralblue-600 transition"
+          type="button"
+          class="w-full py-2 bg-neutralblue-600 text-white rounded-lg hover:bg-neutralblue-700 transition flex items-center justify-center gap-2"
         >
-          Limpar assinatura
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+              clip-rule="evenodd"
+            />
+          </svg>
+          Limpar Assinatura
         </button>
-        <p class="text-sm mt-2">Assinatura do Parceiro 1</p>
       </div>
 
       <!-- Parceiro 2 -->
-      <div class="w-full sm:w-5/12 text-center">
-        <canvas
-          id="signature-pad-2"
-          class="border bg-neutralblue-300 rounded-lg touch-none"
-          width="300"
-          height="150"
-          style="touch-action: none"
-        ></canvas>
+      <div class="space-y-4">
+        <h3 class="text-lg font-semibold text-neutralblue-700 text-center">
+          Parceiro 2
+        </h3>
+        <div
+          class="relative border-2 border-neutralblue-300 rounded-lg bg-neutralblue-50 shadow-inner"
+        >
+          <canvas
+            id="signature-pad-2"
+            class="w-full h-40 touch-none"
+            style="touch-action: none"
+          ></canvas>
+          <div class="absolute bottom-2 left-2 text-xs text-neutralblue-500">
+            Assine aqui
+          </div>
+        </div>
         <button
           id="clear-2"
-          class="mt-2 px-4 py-1 bg-neutralblue-700 text-white rounded hover:bg-neutralblue-600 transition"
+          type="button"
+          class="w-full py-2 bg-neutralblue-600 text-white rounded-lg hover:bg-neutralblue-700 transition flex items-center justify-center gap-2"
         >
-          Limpar assinatura
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+              clip-rule="evenodd"
+            />
+          </svg>
+          Limpar Assinatura
         </button>
-        <p class="text-sm mt-2">Assinatura do Parceiro 2</p>
       </div>
     </div>
 
-    <div class="text-center">
-      <p class="text-sm text-gray-500">Data: ____/____/______</p>
+    <div
+      class="flex flex-col sm:flex-row justify-between items-center mt-8 pt-6 border-t border-neutralblue-200"
+    >
+      <div class="w-full sm:w-1/2 mb-4 sm:mb-0">
+        <label class="block text-sm font-medium text-neutralblue-700 mb-1">
+          Data
+        </label>
+        <input
+          type="date"
+          class="w-full px-3 py-2 border border-neutralblue-300 rounded-lg focus:ring-neutralblue-500 focus:border-neutralblue-500"
+        />
+      </div>
+      <button
+        type="button"
+        id="save-contract"
+        class="w-full sm:w-auto px-6 py-3 bg-neutralblue-700 text-white rounded-lg hover:bg-neutralblue-800 transition font-medium"
+      >
+        Salvar Contrato
+      </button>
     </div>
   </div>
 </section>
