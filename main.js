@@ -2,6 +2,17 @@ document.addEventListener('DOMContentLoaded', function () {
   // Verifica se há um contrato salvo
   const savedContract = checkForSavedContract();
 
+  // Mostra/oculta o botão de deletar
+  document.addEventListener('signaturesLoaded', () => {
+    const deleteBtn = document.getElementById('delete-contract');
+    if (deleteBtn) {
+      deleteBtn.style.display = savedContract ? 'block' : 'none';
+    }
+
+    if (savedContract) {
+      loadSavedContract(savedContract);
+    }
+  });
   // Carrega os componentes estáticos
   loadComponent('header-container', 'header.html');
   loadComponent('intro-container', 'intro.html');
