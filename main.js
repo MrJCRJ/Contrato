@@ -138,35 +138,6 @@ function initializeSignaturePads() {
   const clear1 = document.getElementById('clear-1');
   const clear2 = document.getElementById('clear-2');
   const saveBtn = document.getElementById('save-contract');
-
-  if (!canvas1 || !canvas2 || !clear1 || !clear2) {
-    console.error("Elementos de assinatura não encontrados!");
-    return;
-  }
-
-  // Inicializa as assinaturas
-  try {
-    new SimpleSignaturePad('signature-pad-1', 'clear-1');
-    new SimpleSignaturePad('signature-pad-2', 'clear-2');
-
-    // Configura o botão de salvar se existir
-    if (saveBtn) {
-      saveBtn.addEventListener('click', () => {
-        alert('Contrato assinado com sucesso!');
-      });
-    }
-  } catch (error) {
-    console.error("Erro ao inicializar assinaturas:", error);
-  }
-}
-
-function initializeSignaturePads() {
-  // Verifica se os elementos existem
-  const canvas1 = document.getElementById('signature-pad-1');
-  const canvas2 = document.getElementById('signature-pad-2');
-  const clear1 = document.getElementById('clear-1');
-  const clear2 = document.getElementById('clear-2');
-  const saveBtn = document.getElementById('save-contract');
   const dateInput = document.querySelector('input[type="date"]');
 
   if (!canvas1 || !canvas2 || !clear1 || !clear2) {
@@ -179,6 +150,15 @@ function initializeSignaturePads() {
     const today = new Date().toISOString().split('T')[0];
     dateInput.value = today;
     dateInput.max = today; // Não permite datas futuras
+  }
+
+  const deleteBtn = document.getElementById('delete-contract');
+  if (deleteBtn) {
+    deleteBtn.addEventListener('click', () => {
+      if (confirm('Tem certeza que deseja deletar este contrato? Esta ação não pode ser desfeita.')) {
+        deleteSavedContract();
+      }
+    });
   }
 
   // Inicializa as assinaturas
@@ -257,4 +237,25 @@ function checkForSavedContract() {
   // Tenta carregar do localStorage local
   const localContract = localStorage.getItem('saved_contract');
   return localContract ? JSON.parse(localContract) : null;
+}
+
+function deleteSavedContract() {
+  // Verifica se há um ID de contrato na URL
+  const urlParams = new URLSearchParams(window.location.search);
+  const contractId = urlParams.get('contract');
+
+  if (contractId) {
+    // Remove o contrato compartilhado
+    localStorage.removeItem(`contract_${contractId}`);
+  }
+
+  // Remove o contrato local
+  localStorage.removeItem('saved_contract');
+
+  // Remove as assinaturas individuais
+  localStorage.removeItem('signature_partner1');
+  localStorage.removeItem('signature_partner2');
+
+  // Recarrega a página para limpar tudo
+  window.location.href = window.location.pathname; // Remove parâmetros da URL
 }
