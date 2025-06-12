@@ -135,6 +135,7 @@ async function loadClauses(clauses) {
   // Limpa os containers antes de carregar
   container.innerHTML = '';
   navContainer.innerHTML = '';
+  navContainer.className = 'flex overflow-x-auto space-x-2 py-2 clause-nav';
 
   // Carrega as cláusulas em série para manter a ordem
   for (const [index, clause] of clauses.entries()) {
@@ -142,53 +143,168 @@ async function loadClauses(clauses) {
     const navLink = document.createElement('a');
     navLink.href = `#${clause.id}`;
     navLink.textContent = clause.title;
-    navLink.className = 'whitespace-nowrap px-4 py-2 bg-white rounded-full text-neutralblue-700 font-medium shadow-neutral-md hover:bg-neutralblue-100 transition-colors duration-200';
-    navLink.addEventListener('click', (e) => {
-      e.preventDefault();
-      toggleAccordion(clause.id);
-    });
+    navLink.className = 'clause-nav-link whitespace-nowrap px-4 py-2 bg-white rounded-full text-neutralblue-700 font-medium shadow-neutral-md hover:bg-neutralblue-100 transition-colors duration-200';
+    navLink.dataset.clauseId = clause.id;
     navContainer.appendChild(navLink);
 
-    if (index < clauses.length - 1) {
-      navContainer.appendChild(document.createTextNode(' '));
-    }
-
     try {
-      // Usa await para garantir a ordem
       const response = await fetch(clause.file);
       const data = await response.text();
 
       const clauseElement = document.createElement('div');
       clauseElement.id = clause.id;
-      clauseElement.className = 'clause-animate clause-card bg-white rounded-lg shadow-neutral-md overflow-hidden transition-all duration-300';
+      clauseElement.className = 'clause-animate clause-card bg-white rounded-2xl shadow-md overflow-hidden transition-all duration-300 mb-6';
 
       clauseElement.innerHTML = `
-        <div class="accordion-header p-4 flex justify-between items-center" data-target="${clause.id}-content">
-          <h3 class="text-lg font-semibold text-neutralblue-700">${clause.title}</h3>
-          <svg class="accordion-arrow w-5 h-5 text-neutralblue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <button class="accordion-header w-full p-6 flex justify-between items-center text-left" 
+                aria-expanded="false" 
+                aria-controls="${clause.id}-content"
+                data-clause-id="${clause.id}">
+          <h3 class="text-xl font-semibold text-neutralblue-700">${clause.title}</h3>
+          <svg class="accordion-arrow w-6 h-6 text-neutralblue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
           </svg>
-        </div>
-        <div id="${clause.id}-content" class="accordion-content px-4 pb-4">
-          ${data}
+        </button>
+        <div id="${clause.id}-content" class="accordion-content" aria-hidden="true">
+          <div class="p-6 pt-0">
+            ${data}
+          </div>
         </div>
       `;
 
       container.appendChild(clauseElement);
 
-      // Adiciona o evento de clique ao cabeçalho
+      // Adiciona eventos
       const header = clauseElement.querySelector('.accordion-header');
-      header.addEventListener('click', () => {
-        header.classList.toggle('active');
-        const content = document.getElementById(`${clause.id}-content`);
-        content.classList.toggle('open');
-      });
-
+      header.addEventListener('click', () => toggleClause(clause.id));
     } catch (error) {
       console.error(`Erro ao carregar ${clause.file}:`, error);
-      // Podemos adicionar uma cláusula de fallback aqui se desejar
+      // Fallback para cláusula não carregada
+      container.innerHTML += `
+        <div id="${clause.id}" class="bg-white rounded-2xl shadow-md p-6 text-center">
+          <p class="text-neutralblue-500">Não foi possível carregar esta cláusula.</p>
+        </div>
+      `;
     }
   }
+
+  // Configura observador de interseção para highlight na navegação
+  setupIntersectionObserver(clauses);
+}
+
+// Nova função para alternar cláusulas
+function toggleClause(clauseId, scrollIntoView = false) {
+  const header = document.querySelector(`[data-clause-id="${clauseId}"]`);
+  const content = document.getElementById(`${clauseId}-content`);
+  const isOpening = !header.classList.contains('active');
+
+  // Fecha todos os outros accordions se estiver abrindo este
+  if (isOpening) {
+    document.querySelectorAll('.accordion-content.open').forEach(el => {
+      if (el.id !== `${clauseId}-content`) {
+        el.classList.remove('open');
+        el.setAttribute('aria-hidden', 'true');
+        const otherHeader = document.querySelector(`[data-clause-id="${el.id.replace('-content', '')}"]`);
+        otherHeader.classList.remove('active');
+        otherHeader.setAttribute('aria-expanded', 'false');
+      }
+    });
+  }
+
+  header.classList.toggle('active');
+  content.classList.toggle('open');
+
+  // Atualiza atributos ARIA
+  const isExpanded = header.classList.contains('active');
+  header.setAttribute('aria-expanded', isExpanded);
+  content.setAttribute('aria-hidden', !isExpanded);
+
+  // Atualiza navegação
+  updateNavHighlight(clauseId);
+
+  // Scroll para visualização se necessário
+  if (scrollIntoView && isOpening) {
+    setTimeout(() => {
+      header.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 50);
+  }
+}
+
+// Configura observador de interseção para highlight na navegação
+function setupIntersectionObserver(clauses) {
+  const options = {
+    root: null,
+    rootMargin: '0px',
+    threshold: 0.5
+  };
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const clauseId = entry.target.id;
+        updateNavHighlight(clauseId);
+      }
+    });
+  }, options);
+
+  clauses.forEach(clause => {
+    const element = document.getElementById(clause.id);
+    if (element) observer.observe(element);
+  });
+}
+
+// Atualiza destaque na navegação
+function updateNavHighlight(clauseId) {
+  document.querySelectorAll('.clause-nav-link').forEach(link => {
+    if (link.dataset.clauseId === clauseId) {
+      link.classList.add('active');
+    } else {
+      link.classList.remove('active');
+    }
+  });
+}
+
+// Modifique a função loadComponent para usar o novo accordion
+function loadComponent(containerId, filePath) {
+  fetch(filePath)
+    .then(response => response.text())
+    .then(data => {
+      if (containerId === 'signatures-container') {
+        document.getElementById(containerId).innerHTML = `
+          <button class="accordion-header w-full p-6 flex justify-between items-center text-left bg-white rounded-t-2xl shadow-md"
+                  aria-expanded="false" 
+                  aria-controls="signatures-content"
+                  data-target="signatures">
+            <h2 class="text-xl sm:text-2xl font-bold text-neutralblue-800">Assinaturas</h2>
+            <svg class="accordion-arrow w-6 h-6 text-neutralblue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          <div id="signatures-content" class="accordion-content bg-white rounded-b-2xl shadow-md" aria-hidden="true">
+            <div class="p-6 pt-0">
+              ${data}
+            </div>
+          </div>
+        `;
+
+        const header = document.querySelector('#signatures-container .accordion-header');
+        header.addEventListener('click', () => {
+          const content = document.getElementById('signatures-content');
+          const isExpanded = header.getAttribute('aria-expanded') === 'true';
+
+          header.setAttribute('aria-expanded', !isExpanded);
+          content.setAttribute('aria-hidden', isExpanded);
+          header.classList.toggle('active');
+          content.classList.toggle('open');
+        });
+
+        initializeSignaturePads();
+        document.dispatchEvent(new Event('signaturesLoaded'));
+      } else {
+        document.getElementById(containerId).innerHTML = data;
+      }
+    })
+    .catch(error => console.error(`Erro ao carregar ${filePath}:`, error));
 }
 
 function setupBackToTop() {

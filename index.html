@@ -111,28 +111,63 @@
       }
     </style>
     <style>
-      /* Adicione isso ao seu <style> existente */
+      /* Melhorias para o accordion */
       .accordion-header {
         cursor: pointer;
         transition: all 0.3s ease;
+        user-select: none;
+      }
+
+      .accordion-header:hover {
+        background-color: rgba(210, 218, 226, 0.3);
       }
 
       .accordion-content {
         max-height: 0;
         overflow: hidden;
-        transition: max-height 0.3s ease;
+        transition: max-height 0.3s ease-out;
+        will-change: max-height;
       }
 
       .accordion-content.open {
-        max-height: 2500px; /* Valor maior que o conteúdo máximo */
+        max-height: 5000px; /* Valor maior que o conteúdo máximo */
+        transition: max-height 0.5s ease-in;
       }
 
       .accordion-arrow {
-        transition: transform 0.3s ease;
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       }
 
       .accordion-header.active .accordion-arrow {
         transform: rotate(180deg);
+      }
+
+      /* Navegação entre cláusulas */
+      .clause-nav {
+        scrollbar-width: thin;
+        scrollbar-color: #bcccdc #f0f4f8;
+      }
+
+      .clause-nav::-webkit-scrollbar {
+        height: 6px;
+      }
+
+      .clause-nav::-webkit-scrollbar-track {
+        background: #f0f4f8;
+      }
+
+      .clause-nav::-webkit-scrollbar-thumb {
+        background-color: #bcccdc;
+        border-radius: 3px;
+      }
+
+      .clause-nav-link {
+        scroll-margin: 8px;
+      }
+
+      .clause-nav-link.active {
+        background-color: #334e68;
+        color: white;
       }
     </style>
   </head>
