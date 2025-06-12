@@ -1,22 +1,50 @@
 <section class="container mx-auto px-4 py-8">
-  <div class="bg-white rounded-xl shadow-lg p-6 transition-all hover:shadow-xl">
-    <h2 class="text-2xl font-semibold text-neutralblue-700 mb-4">
-      Cúmplices Até no Fim ❤️
+  <div
+    class="bg-white rounded-2xl shadow-lg p-8 transition-all hover:shadow-xl hover:-translate-y-1"
+  >
+    <h2 class="text-3xl font-bold text-neutralblue-700 mb-6 text-center">
+      🤝 Cúmplices Até no Fim ❤️
     </h2>
-    <p class="mb-4">
-      Dois seres não exatamente normais decidiram formar uma dupla oficialmente
-      não-certificada para viver uma vida minimamente organizada (ou pelo menos
-      divertida).
+
+    <div class="space-y-5 text-lg">
+      <p class="text-neutral-800 leading-relaxed">
+        🧑‍🤝‍🧑 Dois seres não exatamente normais decidiram formar uma dupla
+        oficialmente não-certificada para viver uma vida minimamente organizada
+        (ou pelo menos divertida).
+      </p>
+
+      <p class="text-neutral-800 leading-relaxed">
+        🎯 A missão inclui: rir em horas impróprias, criar planos mirabolantes
+        que raramente se cumprem, e dar apoio mútuo mesmo quando nenhum dos dois
+        faz ideia do que tá fazendo.
+      </p>
+
+      <p class="text-neutral-800 leading-relaxed">
+        ✨ Não prometemos finais de conto de fadas, mas garantimos: vai ter
+        parceria de verdade, zoeira com responsabilidade emocional e disposição
+        pra encarar o caos de mãos dadas.
+      </p>
+    </div>
+
+    <div class="mt-6 flex justify-center">
+      <div class="heart-divider w-1/2" aria-hidden="true"></div>
+    </div>
+
+    <p class="mt-6 text-center text-neutralblue-600 italic">
+      📜 Assinado digitalmente neste dia:
+      <span id="current-date" class="font-semibold"></span>
     </p>
-    <p class="mb-4">
-      A missão inclui: rir em horas impróprias, criar planos mirabolantes que
-      raramente se cumprem, e dar apoio mútuo mesmo quando nenhum dos dois faz
-      ideia do que tá fazendo.
-    </p>
-    <p>
-      Não prometemos finais de conto de fadas, mas garantimos: vai ter parceria
-      de verdade, zoeira com responsabilidade emocional e disposição pra encarar
-      o caos de mãos dadas.
-    </p>
+
+    <script>
+      // Adiciona a data atual automaticamente
+      const options = {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      };
+      document.getElementById("current-date").textContent =
+        new Date().toLocaleDateString("pt-BR", options);
+    </script>
   </div>
 </section>
