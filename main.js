@@ -12,6 +12,14 @@ document.addEventListener('DOMContentLoaded', function () {
   const clauses = [
     { id: 'clause-1', title: 'Respeito Mútuo', file: 'clause-1.html' },
     { id: 'clause-2', title: 'Comunicação Transparente', file: 'clause-2.html' },
+    { id: 'clause-3', title: 'Dedicação Total', file: 'clause-3.html' },
+    { id: 'clause-4', title: 'Apoio Mútuo', file: 'clause-4.html' },
+    { id: 'clause-5', title: 'Afeto e Intimidade', file: 'clause-5.html' },
+    { id: 'clause-6', title: 'Crescimento em Dupla', file: 'clause-6.html' },
+    { id: 'clause-7', title: 'Brigas Construtivas', file: 'clause-7.html' },
+    { id: 'clause-8', title: 'Fidelidade e Confiança', file: 'clause-8.html' },
+    { id: 'clause-9', title: 'Liberdade e Individualidade', file: 'clause-9.html' }
+
   ];
 
   loadClauses(clauses);
@@ -120,11 +128,17 @@ function loadComponent(containerId, filePath) {
     .catch(error => console.error(`Erro ao carregar ${filePath}:`, error));
 }
 
-function loadClauses(clauses) {
+async function loadClauses(clauses) {
   const container = document.getElementById('clauses-container');
   const navContainer = document.getElementById('clauses-nav').querySelector('div');
 
-  clauses.forEach((clause, index) => {
+  // Limpa os containers antes de carregar
+  container.innerHTML = '';
+  navContainer.innerHTML = '';
+
+  // Carrega as cláusulas em série para manter a ordem
+  for (const [index, clause] of clauses.entries()) {
+    // Adiciona link de navegação
     const navLink = document.createElement('a');
     navLink.href = `#${clause.id}`;
     navLink.textContent = clause.title;
@@ -139,37 +153,42 @@ function loadClauses(clauses) {
       navContainer.appendChild(document.createTextNode(' '));
     }
 
-    fetch(clause.file)
-      .then(response => response.text())
-      .then(data => {
-        const clauseElement = document.createElement('div');
-        clauseElement.id = clause.id;
-        clauseElement.className = 'clause-animate clause-card bg-white rounded-lg shadow-neutral-md overflow-hidden transition-all duration-300';
+    try {
+      // Usa await para garantir a ordem
+      const response = await fetch(clause.file);
+      const data = await response.text();
 
-        clauseElement.innerHTML = `
-          <div class="accordion-header p-4 flex justify-between items-center" data-target="${clause.id}-content">
-            <h3 class="text-lg font-semibold text-neutralblue-700">${clause.title}</h3>
-            <svg class="accordion-arrow w-5 h-5 text-neutralblue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-            </svg>
-          </div>
-          <div id="${clause.id}-content" class="accordion-content px-4 pb-4">
-            ${data}
-          </div>
-        `;
+      const clauseElement = document.createElement('div');
+      clauseElement.id = clause.id;
+      clauseElement.className = 'clause-animate clause-card bg-white rounded-lg shadow-neutral-md overflow-hidden transition-all duration-300';
 
-        container.appendChild(clauseElement);
+      clauseElement.innerHTML = `
+        <div class="accordion-header p-4 flex justify-between items-center" data-target="${clause.id}-content">
+          <h3 class="text-lg font-semibold text-neutralblue-700">${clause.title}</h3>
+          <svg class="accordion-arrow w-5 h-5 text-neutralblue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </div>
+        <div id="${clause.id}-content" class="accordion-content px-4 pb-4">
+          ${data}
+        </div>
+      `;
 
-        // Adiciona o evento de clique ao cabeçalho
-        const header = clauseElement.querySelector('.accordion-header');
-        header.addEventListener('click', () => {
-          header.classList.toggle('active');
-          const content = document.getElementById(`${clause.id}-content`);
-          content.classList.toggle('open');
-        });
-      })
-      .catch(error => console.error(`Erro ao carregar ${clause.file}:`, error));
-  });
+      container.appendChild(clauseElement);
+
+      // Adiciona o evento de clique ao cabeçalho
+      const header = clauseElement.querySelector('.accordion-header');
+      header.addEventListener('click', () => {
+        header.classList.toggle('active');
+        const content = document.getElementById(`${clause.id}-content`);
+        content.classList.toggle('open');
+      });
+
+    } catch (error) {
+      console.error(`Erro ao carregar ${clause.file}:`, error);
+      // Podemos adicionar uma cláusula de fallback aqui se desejar
+    }
+  }
 }
 
 function setupBackToTop() {
